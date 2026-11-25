@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SmartPreview</title>
+<style>
+  :root {
+    --bg: #1d1d1f; --card: #262628; --line: #38383b; --text: #e8e8ea; --muted: #9a9aa0;
+    --accent: #2f80ed; --ok: #34c759; --warn: #ff9f0a; --err: #ff453a;
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: light) {
+    :root { --bg: #f3f3f5; --card: #fff; --line: #dcdce0; --text: #1d1d1f; --muted: #6e6e73; color-scheme: light; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 13px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 460px; margin: 0 auto; padding: 20px 16px 32px; }
+  header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 14px; }
+  h1 { font-size: 17px; margin: 0; letter-spacing: .2px; }
+  header small { color: var(--muted); }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; }
+  h2 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin: 0 0 8px; }
+  .status { display: flex; gap: 10px; align-items: flex-start; }
+  .dot { flex: none; width: 9px; height: 9px; border-radius: 50%; margin-top: 5px; background: var(--muted); }
+  .dot.ok { background: var(--ok); } .dot.warn { background: var(--warn); } .dot.err { background: var(--err); }
+  .status b { display: block; font-weight: 600; }
+  .muted { color: var(--muted); }
+  .small { font-size: 12px; }
+  label { display: block; color: var(--muted); margin: 10px 0 4px; }
+  input, select { width: 100%; font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px; }
+  input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  .row { display: flex; gap: 8px; margin-top: 12px; }
+  .row > * { flex: 1; }
+  button { font: inherit; font-weight: 600; border: 0; border-radius: 8px; padding: 8px 10px; cursor: pointer; color: #fff; background: var(--accent); }
+  button.secondary { color: var(--text); background: transparent; border: 1px solid var(--line); }
+  button.stop { background: var(--err); }
+  button:disabled { opacity: .5; cursor: default; }
+  ul { list-style: none; margin: 6px 0 0; padding: 0; }
+  li { display: flex; gap: 8px; align-items: center; padding: 5px 0; border-top: 1px solid var(--line); }
+  li:first-child { border-top: 0; }
+  li .grow { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  li button { padding: 3px 9px; font-size: 12px; }
+  code { font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; user-select: all; }
+  #launch { margin-top: 10px; display: none; }
+  .hint { color: var(--muted); font-size: 11.5px; margin-top: 10px; }
+</style>
+</head>
+<body>
+<main>
+  <header><h1>SmartPreview</h1><small id="ver"></small></header>
+
+  <section>
+    <h2 data-t="PhotoCraft|PhotoCraft"></h2>
+    <div class="status"><span class="dot" id="pcDot"></span><div><b id="pcTitle">…</b><span class="muted small" id="pcText"></span></div></div>
+    <button id="launch" data-t="Open PhotoCraft|Открыть PhotoCraft"></button>
+  </section>
+
+  <section>
+    <h2 data-t="Phones|Телефоны"></h2>
+    <label for="phones" data-t="Android phone addresses (comma-separated)|Адреса Android-телефонов (через запятую)"></label>
+    <input id="phones" placeholder="192.168.1.25" autocomplete="off" spellcheck="false">
+    <div class="row">
+      <button id="discover" class="secondary" data-t="Find phones|Найти телефоны"></button>
+    </div>
+    <ul id="found"></ul>
+    <ul id="targets"></ul>
+  </section>
+
+  <section>
+    <h2 data-t="Preview|Превью"></h2>
+    <label for="size" data-t="Image size (longest side)|Размер картинки (длинная сторона)"></label>
+    <select id="size"></select>
+    <label for="mode" data-t="Export|Экспорт"></label>
+    <select id="mode">
+      <option value="quiet" data-t="Quiet: no notices in PhotoCraft|Тихий: без уведомлений в PhotoCraft"></option>
+      <option value="fast" data-t="Fast: PhotoCraft shows a notice per frame|Быстрый: PhotoCraft показывает уведомление на каждый кадр"></option>
+    </select>
+    <div class="hint" id="modeHint"></div>
+    <div class="row">
+      <button id="toggle"></button>
+      <button id="once" class="secondary" data-t="Send once|Отправить"></button>
+    </div>
+    <div class="status" style="margin-top:12px"><span class="dot" id="frDot"></span><div><b id="frTitle"></b><span class="muted small" id="frText"></span></div></div>
+  </section>
+
+  <section>
+    <h2 data-t="iPhone and other browsers|iPhone и другие браузеры"></h2>
+    <div class="small muted" data-t="Open on the phone (same Wi-Fi):|Открой на телефоне (та же Wi-Fi сеть):"></div>
+    <ul id="urls"></ul>
+  </section>
+
+  <div class="hint" data-t="Frames travel unencrypted on your local network. Use a trusted Wi-Fi or a private VPN.|Кадры идут по локальной сети без шифрования. Используй доверенную Wi-Fi или приватный VPN."></div>
+</main>
+<script>
+  const russian = /^ru/i.test(navigator.language || "en");
+  const t = (en, ru) => russian ? ru : en;
+  document.documentElement.lang = russian ? "ru" : "en";
+  for (const el of document.querySelectorAll("[data-t]")) {
+    const [en, ru] = el.dataset.t.split("|");
+    el.textContent = t(en, ru);
+  }
+  const $ = (id) => document.getElementById(id);
+  let state = null;
+  let editingPhones = false;
+  const drawn = {};
+  // Rebuild a list only when its content changed, so buttons survive the status polling.
+  const changed = (key, value) => {
+    const k = JSON.stringify(value);
+    if (drawn[key] === k) return false;
+    drawn[key] = k;
+    return true;
+  };
+
+  async function api(path, body) {
+    const r = await fetch(path, body === undefined ? { cache: "no-store" } : {
+      method: "POST", headers: { "Content-Type": "application/json", "X-SmartPreview": "1" }, body: JSON.stringify(body),
+    });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(data.error || "HTTP " + r.status);
+    return data;
+  }
+
+  const ago = (sec) => {
+    const s = Math.max(0, Math.round(Date.now() / 1000 - sec));
+    return s < 60 ? t(`${s} s ago`, `${s} с назад`) : new Date(sec * 1000).toLocaleTimeString();
+  };
+
+  function item(left, right) {
+    const li = document.createElement("li");
+    const span = document.createElement("span");
+    span.className = "grow";
+    if (left instanceof Node) span.appendChild(left); else span.textContent = left;
+    li.appendChild(span);
+    if (right) li.appendChild(right);
+    return li;
+  }
+
+  function render(s) {
+    state = s;
+    $("ver").textContent = "v" + s.version;
+
+    const pc = {
+      connected: ["ok", t("Connected", "Подключено")],
+      connecting: ["warn", t("Connecting…", "Подключаюсь…")],
+      starting: ["warn", t("Starting PhotoCraft…", "Запускаю PhotoCraft…")],
+      stopped: ["", t("PhotoCraft is not running", "PhotoCraft не запущен")],
+      "no-access": ["err", t("No access to PhotoCraft", "Нет доступа к PhotoCraft")],
+      error: ["err", t("Error", "Ошибка")],
+    }[s.photocraft] || ["", s.photocraft];
+    $("pcDot").className = "dot " + pc[0];
+    $("pcTitle").textContent = pc[1];
+    let text = "";
+    if (s.photocraft === "connected") {
+      text = s.document ? `${s.document.name} · ${s.document.width}×${s.document.height}` : t("No open document", "Нет открытого документа");
+      if (s.message) text += " · " + s.message;
+    } else if (s.photocraft === "no-access") {
+      text = t("PhotoCraft was started without SmartPreview. Save your work, quit PhotoCraft, then click Open PhotoCraft.",
+               "PhotoCraft запущен без SmartPreview. Сохрани работу, закрой PhotoCraft и нажми «Открыть PhotoCraft».");
+    } else {
+      text = s.message || "";
+    }
+    $("pcText").textContent = text;
+    $("launch").style.display = s.canLaunch ? "block" : "none";
+
+    if (!editingPhones && document.activeElement !== $("phones")) $("phones").value = s.phones.join(", ");
+
+    const sizeEl = $("size");
+    if (!sizeEl.options.length) {
+      for (const v of s.sizes) {
+        const o = document.createElement("option");
+        o.value = v;
+        o.textContent = v ? `${v} px` : t("Document size", "Как в документе");
+        sizeEl.appendChild(o);
+      }
+    }
+    if (document.activeElement !== sizeEl) sizeEl.value = String(s.maxSide);
+    if (document.activeElement !== $("mode")) $("mode").value = s.mode;
+    $("modeHint").textContent = !s.converter
+      ? t("No image converter found: frames are PNG at the document size, and layered documents show a notice in PhotoCraft. Install Pillow (pip install pillow) for JPEG frames.",
+          "Нет конвертера картинок: кадры идут в PNG в размере документа, а многослойные документы показывают уведомление в PhotoCraft. Установи Pillow (pip install pillow) для JPEG.")
+      : s.mode === "quiet"
+        ? t("Exports with layers, so it slows down as layers add up.", "Экспорт со слоями: чем больше слоёв, тем медленнее.")
+        : t("About 35 ms per frame; each frame of a layered document pops up a notice in PhotoCraft.", "Около 35 мс на кадр; каждый кадр многослойного документа всплывает уведомлением в PhotoCraft.");
+
+    $("toggle").textContent = s.live ? t("Stop", "Стоп") : t("Start", "Старт");
+    $("toggle").className = s.live ? "stop" : "";
+
+    const fr = s.frame;
+    $("frDot").className = "dot " + (s.live ? (fr ? "ok" : "warn") : "");
+    $("frTitle").textContent = s.live ? t("Live: every change is sent", "Live: каждое изменение уходит на телефон") : t("Stopped", "Выключено");
+    $("frText").textContent = fr ? `${fr.width}×${fr.height} · ${fr.kb} ${t("KB", "КБ")} · ${fr.ms} ${t("ms", "мс")} · ${ago(fr.time)}` : "";
+
+    // Lists are rebuilt only when their rows change, so their buttons survive the polling;
+    // the per-phone status text is updated in place.
+    if (changed("found", [s.found, s.phones])) {
+      const found = $("found");
+      found.innerHTML = "";
+      for (const f of s.found) {
+        if (s.phones.includes(f.address)) continue;
+        const b = document.createElement("button");
+        b.textContent = t("Add", "Добавить");
+        b.onclick = () => save({ phones: [...state.phones, f.address] });
+        found.appendChild(item(`${f.name} · ${f.address}`, b));
+      }
+    }
+
+    const targets = $("targets");
+    if (changed("targets", s.phones)) {
+      targets.innerHTML = "";
+      for (const p of s.phones) {
+        const wrap = document.createElement("span");
+        const dot = document.createElement("span");
+        dot.className = "dot";
+        dot.style.cssText = "display:inline-block;margin:0 8px 0 0;vertical-align:1px";
+        const text = document.createElement("span");
+        text.className = "txt";
+        wrap.append(dot, text);
+        const del = document.createElement("button");
+        del.className = "secondary";
+        del.textContent = "×";
+        del.title = t("Remove", "Убрать");
+        del.onclick = () => save({ phones: state.phones.filter((x) => x !== p) });
+        const li = item(wrap, del);
+        li.dataset.phone = p;
+        targets.appendChild(li);
+      }
+    }
+    for (const li of targets.children) {
+      const p = li.dataset.phone;
+      const r = s.targets[p];
+      li.querySelector(".dot").className = "dot " + (!r ? "" : r.ok ? "ok" : "err");
+      li.querySelector(".txt").textContent = p + (!r ? "" : r.ok ? " — " + ago(r.time) : " — " + r.message);
+    }
+
+    if (changed("urls", s.viewerUrls)) {
+      const urls = $("urls");
+      urls.innerHTML = "";
+      for (const u of s.viewerUrls) {
+        const c = document.createElement("code");
+        c.textContent = u;
+        urls.appendChild(item(c));
+      }
+      if (!s.viewerUrls.length) urls.appendChild(item(t("No network", "Нет сети")));
+    }
+  }
+
+  async function save(body) {
+    try { render(await api("/api/settings", body)); } catch (e) { alert(e.message); }
+  }
+
+  $("phones").addEventListener("input", () => { editingPhones = true; });
+  $("phones").addEventListener("change", () => { editingPhones = false; save({ phones: $("phones").value }); });
+  $("phones").addEventListener("keydown", (e) => { if (e.key === "Enter") $("phones").blur(); });
+  $("size").addEventListener("change", () => save({ maxSide: parseInt($("size").value, 10) }));
+  $("mode").addEventListener("change", () => save({ mode: $("mode").value }));
+  $("toggle").addEventListener("click", () => save({ live: !state.live }));
+  $("once").addEventListener("click", async () => { try { render(await api("/api/send", {})); } catch (e) { alert(e.message); } });
+  $("launch").addEventListener("click", async () => { try { render(await api("/api/launch", {})); } catch (e) { alert(e.message); } });
+  $("discover").addEventListener("click", async () => {
+    const b = $("discover");
+    b.disabled = true;
+    b.textContent = t("Searching…", "Ищу…");
+    try {
+      const s = await api("/api/discover", {});
+      render(s);
+      if (!s.found.length) alert(t("No phones answered. Open SmartPreview on the phone and check that it is on the same Wi-Fi.",
+                                   "Никто не ответил. Открой SmartPreview на телефоне и проверь, что он в той же Wi-Fi сети."));
+    } catch (e) { alert(e.message); }
+    b.disabled = false;
+    b.textContent = t("Find phones", "Найти телефоны");
+  });
+
+  async function poll() {
+    try { render(await api("/api/state")); }
+    catch (e) { $("pcDot").className = "dot err"; $("pcTitle").textContent = t("SmartPreview is not running", "SmartPreview не запущен"); $("pcText").textContent = ""; }
+    setTimeout(poll, 800);
+  }
+  poll();
+</script>
+</body>
+</html>

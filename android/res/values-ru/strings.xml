@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">"SmartPreview"</string>
+    <string name="fit">"Вписать"</string>
+    <string name="fit_width">"По ширине"</string>
+    <string name="fit_height">"По высоте"</string>
+    <string name="danger_zone">"Опасная зона"</string>
+    <string name="screen_corners">"Углы экрана"</string>
+    <string name="profile_count">"%1$d из %2$d"</string>
+    <string name="waiting">"SmartPreview для PhotoCraft\n\nАдрес телефона:\n%1$s\n\nНа компьютере в панели SmartPreview нажми «Найти телефоны» или введи этот адрес.\n\nТап в центре экрана — меню"</string>
+    <string name="no_network">"нет сети (Wi-Fi / VPN)"</string>
+    <string name="gesture_hint">"Тап по левому / правому краю или кнопки громкости — листать вырезы\nТап в центре — спрятать меню · двойной тап — 1:1 · щипок — зум"</string>
+    <string name="plugin_address">"Адрес телефона: %1$s"</string>
+    <string name="frame_time">" · кадр %1$s"</string>
+    <string name="server_error">"Ошибка сервера: %1$s"</string>
+</resources>

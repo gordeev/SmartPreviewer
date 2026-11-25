@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- tile -->
+    <path android:fillColor="#141B2D" android:pathData="M18,8h72a10,10 0 0 1 10,10v72a10,10 0 0 1 -10,10h-72a10,10 0 0 1 -10,-10v-72a10,10 0 0 1 10,-10z" />
+    <!-- phone -->
+    <path android:fillColor="#FF8A3D" android:pathData="M40,24h28a5,5 0 0 1 5,5v50a5,5 0 0 1 -5,5h-28a5,5 0 0 1 -5,-5v-50a5,5 0 0 1 5,-5z" />
+    <path android:fillColor="#141B2D" android:pathData="M39,31h30v44h-30z" />
+    <!-- picture -->
+    <path android:fillColor="#FF8A3D" android:pathData="M42,69l8,-12 6,8 4,-5 6,9z" />
+    <path android:fillColor="#FFC56B" android:pathData="M60,44m-4,0a4,4 0 1 1 8,0a4,4 0 1 1 -8,0" />
+    <!-- live signal -->
+    <path android:fillColor="#00000000" android:strokeColor="#FFC56B" android:strokeWidth="3" android:strokeLineCap="round"
+        android:pathData="M78,40a14,14 0 0 1 0,20" />
+    <path android:fillColor="#00000000" android:strokeColor="#FFC56B" android:strokeWidth="3" android:strokeLineCap="round"
+        android:pathData="M84,34a22,22 0 0 1 0,32" />
+</vector>

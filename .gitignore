@@ -1,0 +1,166 @@
+# ---------------------------------------------------------------------------
+# Build outputs. Binaries (APK) belong in GitHub Releases, not in the repository.
+# ---------------------------------------------------------------------------
+**/build/
+/dist/
+/out/
+*.apk
+*.aab
+*.idsig
+*.ap_
+*.dex
+*.class
+*.jar
+*.so
+*.zip
+*.ccx
+*.tar.gz
+
+# ---------------------------------------------------------------------------
+# Signing material, credentials and local configuration
+# ---------------------------------------------------------------------------
+*.keystore
+*.jks
+*.p12
+*.pfx
+*.pem
+*.key
+*.crt
+*.cer
+*.mobileprovision
+*.token
+*.env
+.env
+.env.*
+!.env.example
+*password*
+*passwd*
+*secret*
+*credential*
+local.properties
+signing.properties
+keystore.properties
+google-services.json
+.private/
+.secrets/
+secrets/
+
+# ---------------------------------------------------------------------------
+# Runtime data of the connector (it lives outside the repository, but just in case)
+# ---------------------------------------------------------------------------
+frames/
+settings.json
+control.token
+agent-control.token
+agent-connection.json
+smartpreview-*.tif
+smartpreview-*.png
+smartpreview-*.jpg
+
+# ---------------------------------------------------------------------------
+# AI agents and assistants: instructions, memories, sessions, caches
+# ---------------------------------------------------------------------------
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+.mcp.json
+AGENTS.md
+AGENT.md
+.agents/
+.agent/
+.codex/
+.openai/
+.chatgpt/
+.gpt/
+.cursor/
+.cursorrules
+.cursorignore
+.windsurf/
+.windsurfrules
+.continue/
+.aider*
+.copilot/
+.github/copilot-instructions.md
+.gemini/
+GEMINI.md
+.cline/
+.clinerules
+.roo/
+.kilocode/
+.zed/
+.tabnine/
+.codeium/
+.sourcegraph/
+SKILL.md
+skills/
+PROMPT*
+prompt*
+TODO*
+todo*
+NOTES*
+notes*
+scratch/
+scratchpad/
+
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+.venv/
+venv/
+env/
+*.egg-info/
+
+# ---------------------------------------------------------------------------
+# Android / Gradle / Java tooling
+# ---------------------------------------------------------------------------
+.gradle/
+.kotlin/
+.cxx/
+.externalNativeBuild/
+captures/
+*.hprof
+*.iml
+
+# ---------------------------------------------------------------------------
+# Editors, IDEs and operating systems
+# ---------------------------------------------------------------------------
+.idea/
+.vscode/
+.fleet/
+.history/
+*.sublime-*
+*.swp
+*.swo
+*~
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# ---------------------------------------------------------------------------
+# Logs and temporary files
+# ---------------------------------------------------------------------------
+*.log
+*.tmp
+*.temp
+*.bak
+*.orig
+tmp/
+temp/
